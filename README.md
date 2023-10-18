@@ -22,13 +22,13 @@ However, you can enhance and create additional dashboards to gain further insigh
 1. Clone this GitHub repository:
 
     ```shell
-    $ git clone git@git.corp.adobe.com:fccs-content-delivery/cdn-logs-elk.git
+    $ git clone git@github.com:adobe/AEMCS-CDN-Log-Analysis-ELK-Tool.git
     ```
 
 1. Navigate to the cloned repository:
 
     ```shell
-    $ cd cdn-logs-elk
+    $ cd AEMCS-CDN-Log-Analysis-ELK-Tool
     ```
 
 1. Create one folder for each AEM environment you would like to monitor inside `logs/` folder and place your `.log` files there. For example, you could have three sub-folders corresponding to your `dev`, `stage` and `prod` environments:
@@ -91,7 +91,7 @@ This completes the one-time setup. Now you can ingest the logs and analyze them.
 
 If you would like to start with a fresh setup, follow these steps:
 
-1. Run `docker compose rm -v` from the repo directory (that is, `cdn-logs-elk`).
+1. Run `docker compose rm -v` from the repo directory (that is `AEMCS-CDN-Log-Analysis-ELK-Tool`).
 
 1. Remove the `logs/.sincedb` file.
 
@@ -106,7 +106,7 @@ There are various ways to stop the ELK Docker container. You can use any of the 
 - Using Docker command.
 
     ```shell
-    $ cd cdn-logs-elk
+    $ cd AEMCS-CDN-Log-Analysis-ELK-Tool
     $ make stop
     ```
 
