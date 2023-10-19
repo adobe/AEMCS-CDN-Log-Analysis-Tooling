@@ -6,8 +6,8 @@ This repo lets you inspect CDN Logs and visualize metrics through dashboards usi
 
 ELK stands for three popular projects: Elasticsearch, Logstash, and Kibana. The ELK stack is helpful for aggregating, analyzing logs, and creating visualizations for monitoring, and troubleshooting purposes. To quickstart the analysis, the following dashboards are provided:
 
-- Web Application Firewall (WAF)
-- CDN Cache Stats
+- Traffic Filter Rules (including WAF)
+- CDN Cache Hit Ratio
 
 However, you can enhance and create additional dashboards to gain further insights and optimize the CDN configurations.
 
