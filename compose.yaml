@@ -27,8 +27,8 @@ services:
       - ./logs:/usr/share/logstash/data/logs
       - ./logstash/pipeline/logstash-cdn-logs.config:/usr/share/logstash/pipeline/logstash-cdn-logs.config
     ports:
-      - "5000:5000/tcp"
-      - "5000:5000/udp"
+      - "6000:6000/tcp"
+      - "6000:6000/udp"
       - "5044:5044"
       - "9600:9600"
     depends_on:
