@@ -1,6 +1,6 @@
 # ELK Docker Containers for AEM as a Cloud Service CDN Log Analysis
 
-This repo lets you inspect CDN Logs and visualize metrics through dashboards using the ELK stack.
+This repo lets you analyze AEM as a Cloud Service (AEMCS) CDN log files and visualize metrics through dashboards using the ELK stack.
 
 ## Overview
 
@@ -13,11 +13,11 @@ However, you can enhance and create additional dashboards to gain further insigh
 
 ## Prerequisites
 
-- Install [Docker](https://docs.docker.com/engine/install/) and increase the memory limit (`Preferences -> Resources -> Advanced`) to at least 4GB.
+- Install [Docker](https://docs.docker.com/engine/install/) and increase the memory limit (`Preferences -> Resources -> Advanced`) to at least 4 GB.
 
 - Download the [CDN logs](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/manage-logs.html?lang=en) you would like to analyze.
 
-## How to setup the ELK Docker container
+## How to set up the ELK Docker container
 
 1. Clone this GitHub repository:
 
@@ -31,7 +31,7 @@ However, you can enhance and create additional dashboards to gain further insigh
     $ cd AEMCS-CDN-Log-Analysis-ELK-Tool
     ```
 
-1. Create one folder for each AEM environment you would like to monitor inside `logs/` folder and place your `.log` files there. For example, you could have three sub-folders corresponding to your `dev`, `stage` and `prod` environments:
+1. Create one folder for each AEM environment that you would like to monitor inside `logs/` folder and place your `.log` files there. For example, you could have three subfolders corresponding to your `dev`, `stage` and `prod` environments:
 
     ```shell
     $ mkdir -p logs/dev
@@ -47,7 +47,7 @@ However, you can enhance and create additional dashboards to gain further insigh
     $ mkdir -p logs/p<PROGRAM-ID>-prod
     ```
  
-    There are no assumptions about the naming format but it is recommended to use suggestive names for these subfolders since they will appear in your dashboards.
+    There are no assumptions about the naming format but it is recommended to use suggestive names for these subfolders since they appear in your dashboards.
 
 1. When you are ready, run the command below: 
 
@@ -59,7 +59,7 @@ However, you can enhance and create additional dashboards to gain further insigh
 
 1. Once the above command-related output stops appearing in the console, it means that the ELK stack is ready to use. You can also verify by checking your Docker Desktop application (in the `Containers` section).
 
-1. Navigate to <http://localhost:5601/app/discover> in your browser. You will see the Elastic home page. 
+1. Navigate to <http://localhost:5601/app/discover> in your browser. You see the Elastic home page. 
 
     ![Elastic - Kibana Home Page](images/elk-home.png)
 
