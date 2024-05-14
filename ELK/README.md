@@ -67,7 +67,7 @@ However, you can enhance and create additional dashboards to gain further insigh
     ![Elastic - Kibana Home Page](images/elk-home.png)
 
  
-1. Import the provided dashboards by clicking `Menu` (three horizontal bars on the top-left side), followed by `Stack Management` and `Saved Objects` from the options on the left. Finally, click `Import` and select the desired `.ndjson` files from the cloned repository's `dashboards` directory.
+1. Import the provided dashboards by clicking `Menu` (three horizontal bars on the top-left side), followed by `Stack Management` and `Saved Objects` from the options on the left. Finally, click `Import` and select the desired `.ndjson` files from the cloned repository's [dashboards](./dashboards/) directory.
 
     ![Elastic - Import Dashboard](images/stack-management.png)
 
@@ -83,6 +83,8 @@ However, you can enhance and create additional dashboards to gain further insigh
 This completes the one-time setup. Now you can ingest the logs and analyze them.
 
 ## How to analyze the AEMCS CDN logs
+
+This repository provides three dashboards to analyze the AEMCS CDN logs. You can use these dashboards to visualize the CDN log data in Kibana.
 
 1. Download the CDN logs from Adobe Cloud Manager, refer the documentation [here](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/manage-logs).
 

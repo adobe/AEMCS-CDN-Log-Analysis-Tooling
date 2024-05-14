@@ -1,0 +1,551 @@
+<form version="1.1" theme="dark">
+  <label>CDN - Traffic dashboard</label>
+  <description>Expose important metrics to monitor DDOS attack</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="index" searchWhenChanged="true">
+      <label>Index</label>
+      <default>main</default>
+      <initialValue>main</initialValue>
+    </input>
+    <input type="text" token="sourcetype" searchWhenChanged="true">
+      <label>Source Type</label>
+      <default>aemcdn</default>
+      <initialValue>aemcdn</initialValue>
+    </input>
+    <input type="text" token="url" searchWhenChanged="true">
+      <label>URL</label>
+      <default>$url$</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="host" searchWhenChanged="true">
+      <label>Host</label>
+      <default>$host$</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="text" token="cli_ip" searchWhenChanged="true">
+      <label>Client IP</label>
+      <default>*</default>
+      <initialValue>$cli_ip$</initialValue>
+    </input>
+    <input type="dropdown" token="request_rate_span" searchWhenChanged="true">
+      <label>Request rate span</label>
+      <choice value="5s">5 seconds</choice>
+      <choice value="10s">10 seconds</choice>
+      <choice value="30s">30 seconds</choice>
+      <choice value="1m">1 minute</choice>
+      <choice value="2m">2 minutes</choice>
+      <choice value="5m">5 minutes</choice>
+      <choice value="10m">10 minutes</choice>
+      <choice value="30m">30 minutes</choice>
+      <choice value="1h">1 hour</choice>
+      <choice value="1d">1 day</choice>
+      <default>1m</default>
+      <initialValue>2m</initialValue>
+    </input>
+    <input type="dropdown" token="statusSelection" searchWhenChanged="true">
+      <label>Status select</label>
+      <choice value="">ALL</choice>
+      <choice value="status &gt;= 500">500x</choice>
+      <choice value="status &gt;= 400 status &lt; 500">400x</choice>
+      <choice value="status &gt;= 300 status &lt; 400">300x</choice>
+      <choice value="status &gt;= 200 status &lt; 300">200x</choice>
+      <default></default>
+    </input>
+    <input type="multiselect" token="cache" searchWhenChanged="true">
+      <label>CDN Cache status</label>
+      <choice value="HIT">HIT</choice>
+      <choice value="SYNTH">SYNTH</choice>
+      <choice value="MISS">MISS</choice>
+      <choice value="ERROR">ERROR</choice>
+      <choice value="PASS">PASS</choice>
+      <choice value="HITPASS">HITPASS</choice>
+      <default>HIT,SYNTH,MISS,ERROR,PASS,HITPASS</default>
+      <initialValue>HIT,SYNTH,MISS,ERROR,PASS,HITPASS</initialValue>
+      <delimiter> </delimiter>
+    </input>
+    <input type="text" token="req_ua" searchWhenChanged="true">
+      <label>User Agent</label>
+      <default>*</default>
+      <initialValue>$req_ua$</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>CDN Request rate</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <eval token="time.earliest">strptime($row._time$,"%Y-%m-%d %H:%M:%S")</eval>
+          <eval token="time.latest">strptime($row._time$,"%Y-%m-%d %H:%M:%S") + $row._span$</eval>
+        </drilldown>
+      </chart>
+    </panel>
+    <panel>
+      <title>4XX-5XX Errors rate</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" status &gt;= 400 cache IN ($cache$) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Non Cached Requests</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN (MISS ERROR PASS) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Origin Requests rate</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN (MISS ERROR PASS) cli_ip="$cli_ip$"
+| rex field=rules "action=(?&lt;action&gt;.*)"
+| rex field=rules "action=(?&lt;action&gt;.*)(,waf)"
+| where (isnull(action) or action!="block") and (isnull(ddos) or ddos!=true)
+| timechart span=$request_rate_span$ count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Blocked requests</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| rex field=rules "action=(?&lt;action&gt;.*)"
+| rex field=rules "action=(?&lt;action&gt;.*)(,waf)"
+| where action=="block" OR ddos==true
+| timechart span=$request_rate_span$ count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Blocked Requests Reason</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| rex field=rules "match=(?&lt;reason&gt;.*)(,action)"
+| rex field=rules "action=(?&lt;action&gt;.*)"
+| rex field=rules "action=(?&lt;action&gt;.*)(,waf)"
+| where action="block" OR ddos=true
+| eval reason=if(ddos==true AND reason=="","AdobeDDoS",reason)
+| top reason</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Max Origin RPS per Client IP and POP</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN (MISS PASS) cli_ip="$cli_ip$"
+| bin span=s _time
+| stats count as rps by _time cli_ip pop
+| timechart max(rps)</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Max Edge RPS per Client IP and POP</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cli_ip="$cli_ip$"
+| bin span=s _time
+| stats count as rps by _time cli_ip pop
+| timechart max(rps)</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Request methods</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| stats count by method</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Response status codes</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| bucket status span=100 
+| eval status=mvindex(split(status,"-"),0)."-".(tonumber(mvindex(split(status,"-"),1))-1)
+| stats count by status</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">small</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top paths requested (with different query parameters)</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| rex field=url "((?&lt;urlPath&gt;[^?]*)[\?]?(?&lt;urlQs&gt;.*))"
+| stats count dc(urlQs) by method host urlPath
+| sort -count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top endpoint requested</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| top limit=50 url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="url">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Client IP Over Time</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count by cli_ip</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Client IP</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| top limit=20 cli_ip</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="origin_host">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Country over Time</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count by cli_country</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Country</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| top limit=10 cli_country
+| rename cli_country AS iso2
+| lookup geo_attr_countries iso2 OUTPUT country
+| table country, count, percent</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Hosts Over Time</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| timechart span=$request_rate_span$ count by host</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top target hosts</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url=$url$ host=$host$ req_ua="$req_ua$" $statusSelection$ cache IN ($cache$) cli_ip="$cli_ip$"
+| top limit=20 host</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="origin_host">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>
