@@ -25,7 +25,7 @@ However, you can enhance and create additional dashboards to gain further insigh
 The following respective sections provide the necessary steps to get started with the analysis using the **ELK stack or Splunk**.
 
 - [ELK stack](ELK/README.md)
-- [Splunk](splunk/README.md)
+- [Splunk](Splunk/READEME.md)
 
 
 

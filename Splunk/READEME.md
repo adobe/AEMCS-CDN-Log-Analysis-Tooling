@@ -8,7 +8,7 @@ Splunk is a popular log analysis tool that helps aggregate, analyze logs, and cr
 
 To quickstart the analysis, the following dashboards are provided:
 
-- **CDN Cache Hit Ratio**: provides insights into the cache hit ratio and count of requests by total requests and mime types. Also provides top MISS and HIT URLs.
+- **CDN Cache Hit Ratio**: provides insights into the total cache hit ratio and total count of requests by HIT, PASS, and MISS status. Also provides top HIT, PASS, and MISS URLs.
 - **CDN Traffic Dashboard**: provides insights into the traffic via CDN and Origin request rate, 4xx and 5xx error rates, and non-cached requests. Also provides max CND and Origin requests per second per client IP address and more insights to optimize the CDN configurations.
 - **WAF Dashboard**: provides insights via analyzed, flagged, and blocked requests. Also provides top attacks by WAF Flag ID, top 100 attackers by client IP, country, and user agent and more insights to optimize the WAF configurations.
 
