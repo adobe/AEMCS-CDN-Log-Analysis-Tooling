@@ -1,2 +1,2 @@
-logs/.sincedb
+logs/**/.sincedb
 logs/**/*.log
