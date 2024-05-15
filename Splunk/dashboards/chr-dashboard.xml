@@ -1,0 +1,368 @@
+<form version="1.1" theme="dark">
+  <label>CDN - CHR dashboard</label>
+  <description>Show WAF metrics</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="index" searchWhenChanged="true">
+      <label>Index</label>
+      <default>main</default>
+      <initialValue>main</initialValue>
+    </input>
+    <input type="text" token="sourcetype" searchWhenChanged="true">
+      <label>Source Type</label>
+      <default>aemcdn</default>
+      <initialValue>aemcdn</initialValue>
+    </input>
+    <input type="text" token="url" searchWhenChanged="true">
+      <label>URL</label>
+      <default>$url$</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="request_rate_span" searchWhenChanged="true">
+      <label>Request rate span</label>
+      <choice value="5s">5 seconds</choice>
+      <choice value="10s">10 seconds</choice>
+      <choice value="30s">30 seconds</choice>
+      <choice value="1m">1 minute</choice>
+      <choice value="2m">2 minutes</choice>
+      <choice value="5m">5 minutes</choice>
+      <choice value="10m">10 minutes</choice>
+      <choice value="30m">30 minutes</choice>
+      <choice value="1h">1 hour</choice>
+      <choice value="1d">1 day</choice>
+      <default>1h</default>
+      <initialValue>1h</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+      <h1>Total Request Analysis</h1>
+      <ul>
+        <li>The AEM best practice is to have a cache hit ratio of 90% or higher unless requested content is of dynamic nature. Review the AEM as a Cloud Service caching for more details.</li>
+        <li>Review below <strong>State of Cache Ratios/Counts</strong> and <strong>Top URLS</strong> panels to gain insight and optimize the cache hit ratio.</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State of Cache Ratios</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH
+| stats count by cache</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>State of Cache Counts</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH
+| stats count by cache
+| sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h1>Analysis by Request or Mime Types</h1>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h2>HTML Requests Analysis</h2>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State of Cache Ratios</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*text/html;*"
+| stats count by cache</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>State of Cache Counts</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*text/html;*"
+| stats count by cache
+| sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top MISS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="MISS" res_ctype="*text/html;*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top PASS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="PASS" res_ctype="*text/html;*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h2>Image Requests Analysis</h2>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State of Cache Ratios</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*image/*"
+| stats count by cache</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>State of Cache Counts</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*image/*"
+| stats count by cache
+| sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top MISS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="MISS" res_ctype="*image/*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top PASS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="PASS" res_ctype="*image/*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h2>JavaScript and CSS Requests Analysis</h2>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State of Cache Ratios</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH 
+| regex res_ctype=".*(text/css;|application/javascript).*"
+| stats count by cache</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>State of Cache Counts</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH 
+| regex res_ctype=".*(text/css;|application/javascript).*"
+| stats count by cache
+| sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top MISS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="MISS"
+| regex res_ctype=".*(text/css;|application/javascript).*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top PASS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="PASS"
+| regex res_ctype=".*(text/css;|application/javascript).*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h2>JSON Requests Analysis</h2>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>State of Cache Ratios</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*application/json*"
+| stats count by cache</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>State of Cache Counts</title>
+      <chart>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache!=SYNTH res_ctype="*application/json*"
+| stats count by cache
+| sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top MISS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="MISS" res_ctype="*application/json*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top PASS URLs</title>
+      <table>
+        <search>
+          <query>index=$index$ sourcetype=$sourcetype$ url!=/systemready cache="PASS" res_ctype="*application/json*"
+| top url</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>
