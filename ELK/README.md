@@ -25,7 +25,7 @@ However, you can enhance and create additional dashboards to gain further insigh
 1. Clone this GitHub repository:
 
     ```shell
-    $ git clone git@github.com:adobe/AEMCS-CDN-Log-Analysis-ELK-Tool.git
+    $ git clone git@github.com:adobe/AEMCS-CDN-Log-Analysis-Tooling.git
     ```
 
 1. Navigate to the ELK directory of the cloned repository:
@@ -131,7 +131,7 @@ There are various ways to stop the ELK Docker container. You can use any of the 
 - Using Docker command.
 
     ```shell
-    $ cd AEMCS-CDN-Log-Analysis-ELK-Tool
+    $ cd AEMCS-CDN-Log-Analysis-Tooling/ELK
     $ make stop
     ```
 
