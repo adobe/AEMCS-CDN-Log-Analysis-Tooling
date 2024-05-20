@@ -34,7 +34,7 @@ However, you can enhance and create additional dashboards to gain further insigh
     $ cd AEMCS-CDN-Log-Analysis-Tooling/ELK
     ```
 
-1. Create one folder for each AEM environment that you would like to monitor inside `logs/` folder and place your `.log` files there. For example, you could have three subfolders corresponding to your `dev`, `stage` and `prod` environments:
+1. Create one folder for each AEM environment that you would like to monitor inside `logs/` folder and place your `.log` files there, do not forget to unzip the `.log.gz` files. For example, you could have three subfolders corresponding to your `dev`, `stage` and `prod` environments:
 
     ```shell
     $ mkdir -p logs/dev
@@ -88,7 +88,7 @@ This repository provides three dashboards to analyze the AEMCS CDN logs. You can
 
 1. Download the CDN logs from Adobe Cloud Manager, refer the documentation [here](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/manage-logs).
 
-1. Place the CDN logs inside the environment-specific folders. For example, if you have logs for `dev` environment then place them inside `logs/dev` folder. The logs should have `.log` extension.
+1. Place the CDN logs inside the environment-specific folders. For example, if you have logs for `dev` environment then place them inside `logs/dev` folder. The logs should have `.log` extension, unzip the `.log.gz` files if needed.
 
 1. Make sure that the ELK Docker containers are running.
 
