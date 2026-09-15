@@ -1,0 +1,42 @@
+# Standalone Elasticsearch MCP server, for when Elasticsearch runs elsewhere.
+# If it runs on this machine from ../compose.yaml, use the integrated
+# deployment instead: `docker compose --profile mcp up -d` from ELK/.
+#
+#   cp .env.example .env    # then fill in ES_URL and ES_API_KEY
+#   docker compose up -d
+#
+# See README.md for connectivity, credential and permission details.
+
+# Explicit, because Compose would otherwise derive "mcp" from the directory
+# name and collide with any other MCP deployment on the machine.
+name: aem-cdn-logs-mcp
+services:
+  aem-cdn-logs-mcp:
+    image: docker.elastic.co/mcp/elasticsearch:0.4.6
+    container_name: aem-cdn-logs-mcp-standalone
+    # Streamable-HTTP transport. Endpoint /mcp, health /ping.
+    command: ["http"]
+    env_file:
+      - .env
+    ports:
+      # Loopback only: the MCP server has no authentication of its own and
+      # holds a credential for your Elasticsearch cluster.
+      - "127.0.0.1:${MCP_PORT:-8080}:8080"
+    extra_hosts:
+      # Lets ES_URL=http://localhost:9200 reach an SSH tunnel on the Docker
+      # host. Required on Linux, a no-op on Docker Desktop.
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      # The image has no curl or wget, so check the listener with netstat.
+      test: ["CMD-SHELL", "netstat -lnt | grep -q ':8080 '"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    user: "1000:1000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

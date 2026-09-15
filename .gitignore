@@ -1,2 +1,7 @@
 **/logs/**/.sincedb
 **/logs/**/*.log
+
+# Local environment files (may hold Elasticsearch credentials for the MCP server)
+.env
+**/.env
+!**/.env.example
