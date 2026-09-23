@@ -123,6 +123,51 @@ This repository provides three dashboards to analyze the AEMCS CDN logs. You can
 
 1. Based on how many logs you provided, data might still be loading. Make sure that an appropriate interval is selected from the time filter on the top-right side so your logs are covered. Also, select one of the environments from the drop-down list by locating on your screen the filter with text `aem_env_name: Please make a choice`.
 
+## AI-assisted analysis with MCP
+
+The dashboards answer the questions they were built for. For everything else — an ad-hoc question
+about a traffic spike, a rate-limit investigation, an unfamiliar bot — you can point an AI coding
+agent at the same Elasticsearch data through an optional Elasticsearch MCP server.
+
+[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open protocol that lets an AI
+agent call tools on your behalf. The Elasticsearch MCP server exposes your indexed CDN logs as
+read-only tools, so you can ask a question in plain language and have the agent build, run and
+explain the Elasticsearch query — useful precisely when you do not yet know which query to write.
+
+**MCP is optional and off by default.** If you do not enable it, nothing changes: `docker compose up -d`
+starts the same `elasticsearch`, `logstash` and `kibana` containers it always has, on the same ports,
+with the same configuration. The MCP service sits behind a Docker Compose profile and is skipped
+unless you ask for it.
+
+Two ways to run it:
+
+- **Integrated** — one more service in this directory's `compose.yaml`, alongside Elasticsearch:
+
+    ```shell
+    $ cd AEMCS-CDN-Log-Analysis-Tooling/ELK
+    $ docker compose --profile mcp up -d
+    ```
+
+- **Standalone** — MCP on your workstation, connected to an Elasticsearch running somewhere else:
+
+    ```shell
+    $ cd AEMCS-CDN-Log-Analysis-Tooling/ELK/mcp
+    $ cp .env.example .env    # set ES_URL and ES_API_KEY
+    $ docker compose up -d
+    ```
+
+Either way the endpoint is `http://localhost:8080/mcp`, and [Claude Code](mcp/CLIENTS.md#claude-code),
+[OpenAI Codex](mcp/CLIENTS.md#openai-codex) and
+[GitHub Copilot in VS Code](mcp/CLIENTS.md#github-copilot--vs-code) all connect to it.
+
+A few security points, covered in full in the MCP documentation: the MCP port binds to `127.0.0.1`
+only, because the server has no authentication of its own; the remote deployment should use an API
+key scoped to read-only access on the CDN log indices; and Elasticsearch's `:9200` should never be
+exposed to the public Internet — the cluster in this repository runs with security disabled.
+
+- [MCP deployment, security and permissions](mcp/README.md)
+- [AI client configuration and the CDN log fields you can query](mcp/CLIENTS.md)
+
 ## Troubleshooting
 
 If you would like to start with a fresh setup, follow these steps:

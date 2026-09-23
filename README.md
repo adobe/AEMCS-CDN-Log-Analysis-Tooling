@@ -27,6 +27,10 @@ The following respective sections provide the necessary steps to get started wit
 - [ELK stack](ELK/README.md)
 - [Splunk](Splunk/README.md)
 
+The ELK setup additionally supports optional [AI-assisted analysis with MCP](ELK/mcp/README.md),
+which lets AI coding agents such as Claude Code, OpenAI Codex or GitHub Copilot query your indexed
+CDN logs directly. It is off by default and changes nothing for existing setups.
+
 
 
 

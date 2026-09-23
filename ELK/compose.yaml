@@ -50,6 +50,48 @@ services:
       INTERACTIVESETUP_ENABLED: false
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+  # Optional AI-assisted analysis, behind the "mcp" profile so that a plain
+  # `docker compose up -d` is unaffected. See mcp/README.md and mcp/CLIENTS.md.
+  aem-cdn-logs-mcp:
+    image: docker.elastic.co/mcp/elasticsearch:0.4.6
+    container_name: aem-cdn-logs-mcp
+    profiles:
+      - mcp
+    # Streamable-HTTP transport. Endpoint /mcp, health /ping.
+    command: ["http"]
+    environment:
+      ES_URL: "http://elasticsearch:9200"
+      # Unset by default: the bundled Elasticsearch runs with security
+      # disabled. Set these in ELK/.env (git-ignored) if you enable it.
+      ES_API_KEY: "${ES_API_KEY:-}"
+      ES_USERNAME: "${ES_USERNAME:-}"
+      ES_PASSWORD: "${ES_PASSWORD:-}"
+      ES_SSL_SKIP_VERIFY: "${ES_SSL_SKIP_VERIFY:-false}"
+    ports:
+      # Loopback only: the MCP server has no authentication of its own and can
+      # read every index in the cluster.
+      - "127.0.0.1:${MCP_PORT:-8080}:8080"
+    # Start ordering only. service_healthy would abort `up` whenever
+    # Elasticsearch outlasts its healthcheck (10s x 3, no start_period), and
+    # the MCP server connects lazily anyway.
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      # The image has no curl or wget, so check the listener with netstat.
+      test: ["CMD-SHELL", "netstat -lnt | grep -q ':8080 '"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    user: "1000:1000"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - elastic
 networks:
   elastic:
     driver: bridge
